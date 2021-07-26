@@ -38,10 +38,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $userData = $request->all();
-        $newUser = User::create($userData);
+        try{
+            $userData = $request->all();
+            $newUser = User::create($userData);
 
-        return response($newUser, 200);
+            return response($newUser, 200);
+        }catch (\Exception $e){
+            return response($e->getMessage(), $e->getCode());
+        }
+
+
     }
 
     /**

@@ -19,15 +19,20 @@
     <div class="text-center div-login">
         <form class="form-signin">
             <h1 class="h3 mb-3 font-weight-normal">Login</h1>
-            <label for="inputEmail" class="sr-only">Email address</label>
-            <input type="text" id="input-username" class="form-control" placeholder="Email or Username" required="" autofocus="">
+            <label for="inputEmail" class="sr-only">Name</label>
+            <input type="text" id="input-name" class="form-control" placeholder="Name" required="" autofocus="">
+            <label for="inputEmail" class="sr-only">Username</label>
+            <input type="text" id="input-username" class="form-control" placeholder="Username" required="">
+            <label for="inputEmail" class="sr-only">E-mail</label>
+            <input type="text" id="input-email" class="form-control" placeholder="E-mail" required="">
+            <label for="inputEmail" class="sr-only">Phone</label>
+            <input type="text" id="input-phone" class="form-control" placeholder="Phone Number" required="">
             <label for="inputPassword" class="sr-only">Password</label>
             <input type="password" id="input-password" class="form-control" placeholder="Password" required="">
-            <div class="checkbox mb-3">
-                <label>
-                <input type="checkbox" value="remember-me"> Remember me
-                </label>
-            </div>
+            <label for="inputPassword" class="sr-only">Confirm Password</label>
+            <input type="password" id="input-confirm-password" class="form-control" placeholder="Confirm Password" required="">
+            <label for="inputEmail" class="sr-only">Website</label>
+            <input type="text" id="input-website" class="form-control" placeholder="Website (Optional)" >
             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>
     </div>
@@ -39,7 +44,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-    <script src="/js/app.js"></script>
+    <script src="/js/login.js"></script>
 </body>
 
 </html>

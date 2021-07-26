@@ -4,11 +4,18 @@ $(function(){
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
 
+    $([
+        '<a class="dropdown-item" data-toggle="modal" data-target="#user-detail-modal" href="#" data-id='+window.user.id+'>View Profile</a>',
+        '<a class="dropdown-item" data-toggle="modal" data-target="#address-add-modal" href="#" data-id='+window.user.id+'>Add Address</a>',
+        '<a class="dropdown-item" data-toggle="modal" data-target="#company-add-modal" href="#" data-id='+window.user.id+'>Add Company</a>',
+        '<a class="dropdown-item" data-toggle="modal" data-target="#user-edit-modal" href="#" data-id='+window.user.id+'>Edit Profile</a>'
+    ].join('')).insertBefore('#logout');
+
     $('#formcep').on('submit', async (ev) => {
         ev.preventDefault();
         var cep = $('#cep').val();
         $.ajax({
-            url: "https://viacep.com.br/ws/"+cep+"/json/",
+            url: '/viacep/'+cep,
             success: function(data){
                 $('#cep').val('');
                 $('#cep').blur();
@@ -61,6 +68,17 @@ $(function(){
                 $('#users-table').find('tbody').html('');
 
                 $.each(data, function(index, userApi) {
+                    var adminActions = [];
+                    if (window.user.is_admin){
+                        adminActions.push([
+                            '<button class="btn btn-sm btn-success mr-2 btn-edit" data-toggle="modal" data-target="#user-edit-modal" data-id="'+userApi.id+'">'+
+                                '<i class="fas fa-edit"></i>'+
+                            '</button>'+
+                            '<button class="btn btn-sm btn-danger btn-delete" data-id="'+userApi.id+'">'+
+                                '<i class="fas fa-trash-alt"></i>'+
+                            '</button>'
+                        ]);
+                    }
                     $('#users-table').find('tbody').append([
                         '<tr>',
                             '<td>',userApi.name,'</td>',
@@ -70,15 +88,10 @@ $(function(){
                                 '<button class="btn btn-sm btn-primary mr-2 btn-view" data-toggle="modal" data-target="#user-detail-modal" data-id="'+userApi.id+'">',
                                     '<i class="fas fa-eye" ></i>',
                                 '</button>',
-                                '<button class="btn btn-sm btn-success mr-2 btn-edit" data-toggle="modal" data-target="#user-edit-modal" data-id="'+userApi.id+'">',
-                                    '<i class="fas fa-edit"></i>',
-                                '</button>',
-                                '<button class="btn btn-sm btn-danger btn-delete" data-id="'+userApi.id+'">',
-                                    '<i class="fas fa-trash-alt"></i>',
-                                '</button>',
+                                adminActions,
                             '</td>',
                         '</tr>'
-                    ].join(''))
+                    ].join(''));
                 });
 
                 rebindButtons();
@@ -160,9 +173,8 @@ $(function(){
 
     $('#user-detail-modal').on('show.bs.modal', function (event) {
         var userId = $(event.relatedTarget).data('id');
-        if (globalUserID != ""){
-            userId = globalUserID;
-        }
+
+        var adminActions = [];
         $.ajax({
             url: userApi+userId,
             beforeSend: function() {
@@ -189,6 +201,14 @@ $(function(){
                     '<hr>'
                 ].join(''));
 
+                adminActions=[];
+                if (window.user.is_admin){
+                    adminActions.push([
+                        '<div class="col text-right">'+
+                        '<button type="button" class="mb-2 btn btn-success" id="btn-address" data-dismiss="modal" data-toggle="modal" data-target="#address-add-modal">Add Address</button>'+
+                        '</div>'
+                    ]);
+                }
                 $('#user-detail-modal-body').append([
                     '<hr>',
                     '<div class="container">',
@@ -196,12 +216,21 @@ $(function(){
                             '<div class="col">',
                                 '<h5>Addresses</h5>',
                             '</div>',
-                            '<div class="col text-right">',
-                                '<button type="button" class="mb-2 btn btn-success btn-company" data-dismiss="modal" data-toggle="modal" data-target="#address-add-modal">Add Address</button>',
-                            '</div>',
+                            adminActions,
                         '</div>'
                 ].join(''));
+
                 $.each(data.addresses, function (index, address){
+                    adminActions=[];
+                    if (window.user.is_admin){
+                        adminActions.push([
+                            '<div class="col-2 flex-column d-flex">'+
+                            '<button type="button" class="mb-2 btn btn-warning btn-edit-address" data-dismiss="modal" data-toggle="modal" data-target="#address-edit-modal" data-id="'+address.id+'"><i class="fas fa-pen"></i></button>'+
+                            '<br>'+
+                            '<button type="button" class="btn btn-danger btn-delete-address" data-id="'+address.id+'"><i class="fas fa-times"></i></button>'+
+                        '</div>'
+                        ]);
+                    }
                     $('#user-detail-modal-body').append([
                         '<div class="container">',
                             '<div class="mb-2 px-1 py-3 row border rounded">',
@@ -214,16 +243,20 @@ $(function(){
                                         '<p class="mb-1">Lng: ',address.lng ?? 'n/a','</p>',
                                     '</div>',
                                 '</div>',
-                                '<div class="col-2 flex-column d-flex">',
-                                    '<button type="button" class="mb-2 btn btn-warning btn-edit-address" data-dismiss="modal" data-toggle="modal" data-target="#address-edit-modal" data-id="'+address.id+'"><i class="fas fa-pen"></i></button>',
-                                    '<br>',
-                                    '<button type="button" class="btn btn-danger btn-delete-address" data-id="'+address.id+'"><i class="fas fa-times"></i></button>',
-                                '</div>',
+                                adminActions,
                             '</div>',
                         '</div>'
                     ].join(''));
                 });
 
+                adminActions=[];
+                if (window.user.is_admin){
+                    adminActions.push([
+                        '<div class="col text-right">'+
+                            '<button type="button" class="mb-2 btn btn-success" id="btn-company" data-dismiss="modal" data-toggle="modal" data-target="#company-add-modal">Add Company</button>'+
+                        '</div>'
+                    ]);
+                }
                 $('#user-detail-modal-body').append([
                     '<hr>',
                     '<div class="container">',
@@ -231,13 +264,21 @@ $(function(){
                             '<div class="col">',
                                 '<h5>Companies</h5>',
                             '</div>',
-                            '<div class="col text-right">',
-                                '<button type="button" class="mb-2 btn btn-success btn-company" data-dismiss="modal" data-toggle="modal" data-target="#company-add-modal">Add Company</button>',
-                            '</div>',
+                            adminActions,
                         '</div>'
                 ].join(''));
 
                 $.each(data.companies, function (index, company){
+                    adminActions=[];
+                    if (window.user.is_admin){
+                        adminActions.push([
+                        '<div class="col-2 flex-column d-flex">'+
+                            '<button type="button" class="mb-2 btn btn-warning btn-edit-company" data-dismiss="modal" data-toggle="modal" data-target="#company-edit-modal" data-id="'+company.id+'"><i class="fas fa-pen"></i></button>'+
+                            '<br>'+
+                            '<button type="button" class="btn btn-danger btn-delete-company" data-id="'+company.id+'"><i class="fas fa-times"></i></button>'+
+                        '</div>'
+                        ]);
+                    }
                     $('#user-detail-modal-body').append([
                         '<div class="container">',
                             '<div class="mb-2 px-1 py-3 row border rounded">',
@@ -248,11 +289,7 @@ $(function(){
                                         '<p class="mb-1">Catch Phrase: ',company.catch_phrase ?? 'n/a','</p>',
                                     '</div>',
                                 '</div>',
-                                '<div class="col-2 flex-column d-flex">',
-                                    '<button type="button" class="mb-2 btn btn-warning btn-edit-company" data-dismiss="modal" data-toggle="modal" data-target="#company-edit-modal" data-id="'+company.id+'"><i class="fas fa-pen"></i></button>',
-                                    '<br>',
-                                    '<button type="button" class="btn btn-danger btn-delete-company" data-id="'+company.id+'"><i class="fas fa-times"></i></button>',
-                                '</div>',
+                                adminActions,
                             '</div>',
                         '</div>'
                     ].join(''));
@@ -436,6 +473,7 @@ $(function(){
 
             error: function(error) {
                 console.log(error);
+                alert('Erro ao criar usuário');
             }
         });
 
@@ -631,6 +669,7 @@ $(function(){
     $('#cep').on('focusin', (ev) => {
         $('#dados-cep').html('');
     });
+
 });
 
 

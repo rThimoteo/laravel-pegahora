@@ -63,4 +63,5 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 
 TO DO
-[] Laravel UI
+[ok] Laravel UI
+[ok] Autenticação
