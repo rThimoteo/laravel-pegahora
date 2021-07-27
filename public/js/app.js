@@ -151,7 +151,7 @@ $(function(){
         $('.btn-delete-company').on('click', function() {
             var companyId = $(this).data('id');
             var companyDiv = $(this).parent().parent().parent();
-            var response = confirm('Deseja mesmo excluir este endereço?');
+            var response = confirm('Deseja mesmo excluir a compania?');
             if (response){
                 $.ajax({
                     url: companyApi+companyId,
@@ -173,7 +173,6 @@ $(function(){
 
     $('#user-detail-modal').on('show.bs.modal', function (event) {
         var userId = $(event.relatedTarget).data('id');
-
         var adminActions = [];
         $.ajax({
             url: userApi+userId,
@@ -196,7 +195,7 @@ $(function(){
                         '<dt class="col-sm-3">Phone:</dt>',
                         '<dd class="col-sm-9 mb-3">',data.phone,'</dd>',
                         '<dt class="col-sm-3">Website:</dt>',
-                        '<dd class="col-sm-9 mb-3">',data.website,'</dd>',
+                        '<dd class="col-sm-9 mb-3" id="break-adm">',data.website,'</dd>',
                     '</dl>',
                     '<hr>'
                 ].join(''));
@@ -208,6 +207,12 @@ $(function(){
                         '<button type="button" class="mb-2 btn btn-success" id="btn-address" data-dismiss="modal" data-toggle="modal" data-target="#address-add-modal">Add Address</button>'+
                         '</div>'
                     ]);
+                    $([
+                        '<div class="custom-control custom-checkbox ml-3">',
+                            '<input type="checkbox" class="custom-control-input" id="cb-adm">',
+                            '<label class="custom-control-label" for="cb-adm">Administrador</label>',
+                        '</div>'
+                    ].join('')).insertAfter('#break-adm');
                 }
                 $('#user-detail-modal-body').append([
                     '<hr>',
@@ -299,11 +304,96 @@ $(function(){
                 globalUserID = data.id;
                 globalUserName = data.name;
 
+                if(data.is_admin){
+                    $( "#cb-adm" ).prop( "checked", true );
+                }
+
+                if(!data.is_admin){
+                    $( "#cb-adm" ).prop( "checked", false );
+                }
             },
             error: function(error) {
             }
         });
 
+    });
+
+    // CheckBox Administrador
+    $(document).on('change', '#cb-adm', function() {
+
+        //Checkbox admin check
+        if(this.checked) {
+            var resp = confirm('Tornar '+globalUserName+' administrador?');
+            if (resp){
+                var url = userApi+globalUserID;
+                var data = {
+                    'is_admin' : 1
+                }
+                $.ajax({
+                    url,
+
+                    data,
+
+                    type: 'PUT',
+
+                    beforeSend: function() {
+
+                    },
+
+                    success: function() {
+                        alert('Permissão de administrador atualizada!');
+                        $( "#cb-adm" ).prop( "checked", true );
+                    },
+
+                    error: function(error) {
+                        console.log(error);
+                        alert('Ocorreu um erro inesperado.');
+                        $( "#cb-adm" ).prop( "checked", false );
+                    }
+                });
+            }
+            else{
+                $( "#cb-adm" ).prop( "checked", false );
+                return;
+            }
+        }
+
+        //Checkbox admin uncheck
+        else {
+            var resp = confirm('Tirar permissão de Administrador?');
+            if (resp){
+                var url = userApi+globalUserID+'/admin';
+                var data = {
+                    'is_admin' : 0
+                }
+                $.ajax({
+                    url,
+
+                    data,
+
+                    type: 'PUT',
+
+                    beforeSend: function() {
+
+                    },
+
+                    success: function() {
+                        alert('Permissão de administrador retirada!');
+                        $( "#cb-adm" ).prop( "checked", false );
+                    },
+
+                    error: function(error) {
+                        console.log(error);
+                        alert('Ocorreu um erro inesperado.');
+                        $( "#cb-adm" ).prop( "checked", true );
+
+                    }
+                });
+            }
+            else{
+                $( "#cb-adm" ).prop( "checked", true );
+            }
+        };
     });
 
     $('#user-edit-modal').on('show.bs.modal', function (event) {
