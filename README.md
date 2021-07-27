@@ -1,8 +1,9 @@
-Projeto criado com intuito de aprender o básico de uma aplicação Web.
-Utilizando JavaScript, CSS, PHP e HTML.
-# Criado Sem Framework
+Projeto "pegahora" recriado com o Framework Laravel, e algumas funcionalidades a mais.
 
-* [ok]  Criar classe
+# Criado com Laravel
+
+# To do
+* [ok] Criar classe
 * [ok] Criar BASE Html
 * [ok] Criar BASE CSS
 * [ok] Interpolarização PHP HTML
