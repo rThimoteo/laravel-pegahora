@@ -215,7 +215,6 @@ $(function(){
                     ].join('')).insertAfter('#break-adm');
                 }
                 $('#user-detail-modal-body').append([
-                    '<hr>',
                     '<div class="container">',
                         '<div class="row">',
                             '<div class="col">',
@@ -411,7 +410,7 @@ $(function(){
                 $('#user-edit-modal-body').html('');
 
                 $('#user-edit-modal-body').append([
-                    '<dl class="row">',
+                    '<dl class="row px-4">',
                         '<dt class="col-sm-3">Name:</dt>',
                         '<input id="user-edit-name" class="col-sm-9 mb-3 form-control" value="'+data.name+'">',
                         '<dt class="col-sm-3">E-mail:</dt>',
