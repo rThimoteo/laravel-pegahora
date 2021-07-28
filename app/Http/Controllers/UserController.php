@@ -84,16 +84,7 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $userData = $request->toArray();
-
         $user->update($userData);
-
-        // $user->name = $userData['name'];
-        // $user->email = $userData['email'];
-        // $user->username = $userData['username'];
-        // $user->phone = $userData['phone'];
-        // $user->website = $userData['website'];
-
-        // $user->update();
 
         return  response('Usuário Atualizado');
     }
