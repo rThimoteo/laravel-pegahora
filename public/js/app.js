@@ -1,9 +1,11 @@
 //Funções em JQuery
 $(function(){
+
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
 
+    //Inserir dados no dropdown de usuário
     $([
         '<a class="dropdown-item" data-toggle="modal" data-target="#user-detail-modal" href="#" data-id='+window.user.id+'>View Profile</a>',
         '<a class="dropdown-item" data-toggle="modal" data-target="#address-add-modal" href="#" data-id='+window.user.id+'>Add Address</a>',
@@ -11,6 +13,7 @@ $(function(){
         '<a class="dropdown-item" data-toggle="modal" data-target="#user-edit-modal" href="#" data-id='+window.user.id+'>Edit Profile</a>'
     ].join('')).insertBefore('#logout');
 
+    //Pesquisa de CEP
     $('#formcep').on('submit', async (ev) => {
         ev.preventDefault();
         var cep = $('#cep').val();
@@ -43,11 +46,19 @@ $(function(){
         });
     });
 
+    //Apagar a linha do cep ao clicar
+    $('#cep').on('focusin', (ev) => {
+        $('#dados-cep').html('');
+    });
+
+    //Definição de váriaveis constantes
     const usersApiEndpoint = '/user';
     const userApi = '/user/';
     const companyApi = '/company/';
     const addressApi = '/address/';
     globalUserID = "";
+    const addressApiEndpoint = '/address';
+    const companyApiEndpoint = '/company';
 
     const loadingDataRow = [
         '<tr id="loading">',
@@ -55,6 +66,7 @@ $(function(){
         '<tr>'
     ];
 
+    //Carregar usuários para tabela
     function getUsersList() {
         $.ajax({
             url: usersApiEndpoint,
@@ -101,6 +113,7 @@ $(function(){
         });
     }
 
+    //Mudando ação do Delete
     function rebindButtons (){
         $('.btn-delete').off('click');
 
@@ -125,6 +138,7 @@ $(function(){
         });
     }
 
+    //MUdando botão de Delete do Address e Company
     function rebindDeleteButtons() {
         $('.btn-delete-address').off('click');
         $('.btn-delete-address').on('click', function() {
@@ -171,6 +185,7 @@ $(function(){
 
     getUsersList();
 
+    //MODAL DE DETALHES DE USUÁRIO
     $('#user-detail-modal').on('show.bs.modal', function (event) {
         var userId = $(event.relatedTarget).data('id');
         var adminActions = [];
@@ -361,7 +376,7 @@ $(function(){
         else {
             var resp = confirm('Tirar permissão de Administrador?');
             if (resp){
-                var url = userApi+globalUserID+'/admin';
+                var url = userApi+globalUserID;
                 var data = {
                     'is_admin' : 0
                 }
@@ -406,6 +421,11 @@ $(function(){
                 $('#user-edit-modal-body').html('<p class="text-center"> Loading... </p>');
             },
             success: function(data) {
+
+                if(data.website == null){
+                    data.website = "";
+                }
+
                 $('#user-edit-modal-title').text('Edit - '+data.name);
                 $('#user-edit-modal-body').html('');
 
@@ -440,6 +460,13 @@ $(function(){
                 $('#company-edit-modal-body').html('<p class="text-center"> Loading... </p>');
             },
             success: function(company) {
+                if(company.bs == null){
+                    company.bs = "";
+                }
+                if(company.catch_phrase == null){
+                    company.catch_phrase = "";
+                }
+
                 $('#company-edit-modal-title').text('Edit - '+company.name);
                 $('#company-edit-modal-body').html('');
 
@@ -475,6 +502,16 @@ $(function(){
                 $('#address-edit-modal-body').html('<p class="text-center"> Loading... </p>');
             },
             success: function(address) {
+                if(address.suite == null){
+                    address.suite = "";
+                }
+                if(address.lat == null){
+                    address.lat = "";
+                }
+                if(address.lng == null){
+                    address.lng = "";
+                }
+
                 $('#address-edit-modal-title').text('Edit Address');
                 $('#address-edit-modal-body').html('');
 
@@ -755,9 +792,94 @@ $(function(){
 
     });
 
-    $('#cep').on('focusin', (ev) => {
-        $('#dados-cep').html('');
-    });
+    //Carregar dados de addresses
+    function getAddressesList() {
+        $.ajax({
+            url: addressApiEndpoint,
+
+            beforeSend: function() {
+                $('#addresses-table').find('tbody').append(loadingDataRow.join(''));
+            },
+
+            complete: function() {
+                $('#loading').remove();
+            },
+            success: function(addressAPI) {
+
+                $('#addresses-table').find('tbody').html('');
+
+                $.each(addressAPI, function(index, address) {
+                    $.ajax({
+                        url: userApi+address.user_id,
+
+                        beforeSend: function() {
+                        },
+
+                        success: function(user) {
+                            $('#addresses-table').find('tbody').append([
+                                '<tr>',
+                                    '<td>',address.zipcode,'</td>',
+                                    '<td>',address.street,'</td>',
+                                    '<td>',address.suite,'</td>',
+                                    '<td>',user.name,'</td>',
+                                '</tr>'
+                            ].join(''));
+                        },
+                        error: function(error) {
+                        }
+                    });
+                });
+            },
+            error: function(error) {
+            }
+        });
+    }
+
+    //Carregar dados de companies
+    function getCompaniesList() {
+        $.ajax({
+            url: companyApiEndpoint,
+
+            beforeSend: function() {
+                $('#companies-table').find('tbody').append(loadingDataRow.join(''));
+            },
+
+            complete: function() {
+                $('#loading').remove();
+            },
+            success: function(companyAPI) {
+
+                $('#companies-table').find('tbody').html('');
+
+                $.each(companyAPI, function(index, company) {
+                    $.ajax({
+                        url: userApi+company.user_id,
+
+                        beforeSend: function() {
+                        },
+
+                        success: function(user) {
+                            $('#companies-table').find('tbody').append([
+                                '<tr>',
+                                    '<td>',company.name,'</td>',
+                                    '<td>',company.bs,'</td>',
+                                    '<td>',company.catch_phrase,'</td>',
+                                    '<td>',user.name,'</td>',
+                                '</tr>'
+                            ].join(''));
+                        },
+                        error: function(error) {
+                        }
+                    });
+                });
+            },
+            error: function(error) {
+            }
+        });
+    }
+
+    getAddressesList();
+    getCompaniesList();
 
 });
 

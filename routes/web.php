@@ -68,6 +68,15 @@ Route::group(['middleware' => 'auth'], function (){
 
         Route::delete('/{company}', [CompanyController::class, 'destroy']);
     });
+
+    Route::get('/addresses', function () {
+        return view('addresses');
+    });
+
+    Route::get('/companies', function () {
+        return view('companies');
+    });
+
 });
 
 
