@@ -42,9 +42,9 @@
             <table id="users-table" class="table table-striped table-sm">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Username</th>
-                        <th>E-mail</th>
+                        <th><button id="order-name" class="btn-order">Name<i class="fas ml-1 fa-sort"></i></button></th>
+                        <th><button id="order-username" class="btn-order">Username<i class="fas ml-1 fa-sort"></i></button></th>
+                        <th><button id="order-email" class="btn-order">E-mail<i class="fas ml-1 fa-sort"></i></button></th>
                         <th>Actions</th>
                     </tr>
                 </thead>

@@ -59,6 +59,8 @@ $(function(){
     globalUserID = "";
     const addressApiEndpoint = '/address';
     const companyApiEndpoint = '/company';
+    orderAZ = false;
+    oderby = "";
 
     const loadingDataRow = [
         '<tr id="loading">',
@@ -68,6 +70,7 @@ $(function(){
 
     //Carregar usuários para tabela
     function getUsersList() {
+
         $.ajax({
             url: usersApiEndpoint,
             beforeSend: function() {
@@ -77,40 +80,48 @@ $(function(){
                 $('#loading').remove();
             },
             success: function(data) {
-                $('#users-table').find('tbody').html('');
-
-                $.each(data, function(index, userApi) {
-                    var adminActions = [];
-                    if (window.user.is_admin){
-                        adminActions.push([
-                            '<button class="btn btn-sm btn-success mr-2 btn-edit" data-toggle="modal" data-target="#user-edit-modal" data-id="'+userApi.id+'">'+
-                                '<i class="fas fa-edit"></i>'+
-                            '</button>'+
-                            '<button class="btn btn-sm btn-danger btn-delete" data-id="'+userApi.id+'">'+
-                                '<i class="fas fa-trash-alt"></i>'+
-                            '</button>'
-                        ]);
-                    }
-                    $('#users-table').find('tbody').append([
-                        '<tr>',
-                            '<td>',userApi.name,'</td>',
-                            '<td>',userApi.username,'</td>',
-                            '<td>',userApi.email,'</td>',
-                            '<td>',
-                                '<button class="btn btn-sm btn-primary mr-2 btn-view" data-toggle="modal" data-target="#user-detail-modal" data-id="'+userApi.id+'">',
-                                    '<i class="fas fa-eye" ></i>',
-                                '</button>',
-                                adminActions,
-                            '</td>',
-                        '</tr>'
-                    ].join(''));
-                });
-
-                rebindButtons();
+                exportUsers(data);
+                listUsers(data);
             },
             error: function(error) {
             }
         });
+    }
+
+    function exportUsers(data){
+        globalUsers = data;
+    }
+
+    function listUsers(users){
+        $('#users-table').find('tbody').html('');
+
+        $.each(users, function(index, userApi) {
+            var adminActions = [];
+            if (window.user.is_admin){
+                adminActions.push([
+                    '<button class="btn btn-sm btn-success mr-2 btn-edit" data-toggle="modal" data-target="#user-edit-modal" data-id="'+userApi.id+'">'+
+                        '<i class="fas fa-edit"></i>'+
+                    '</button>'+
+                    '<button class="btn btn-sm btn-danger btn-delete" data-id="'+userApi.id+'">'+
+                        '<i class="fas fa-trash-alt"></i>'+
+                    '</button>'
+                ]);
+            }
+            $('#users-table').find('tbody').append([
+                '<tr>',
+                    '<td>',userApi.name,'</td>',
+                    '<td>',userApi.username,'</td>',
+                    '<td>',userApi.email,'</td>',
+                    '<td>',
+                        '<button class="btn btn-sm btn-primary mr-2 btn-view" data-toggle="modal" data-target="#user-detail-modal" data-id="'+userApi.id+'">',
+                            '<i class="fas fa-eye" ></i>',
+                        '</button>',
+                        adminActions,
+                    '</td>',
+                '</tr>'
+            ].join(''));
+        });
+        rebindButtons();
     }
 
     //Mudando ação do Delete
@@ -138,7 +149,7 @@ $(function(){
         });
     }
 
-    //MUdando botão de Delete do Address e Company
+    //Mudando botão de Delete do Address e Company
     function rebindDeleteButtons() {
         $('.btn-delete-address').off('click');
         $('.btn-delete-address').on('click', function() {
@@ -880,6 +891,58 @@ $(function(){
 
     getAddressesList();
     getCompaniesList();
+
+    //Functions Order by
+    //Order Users by name
+    function orderUsersByName(users){
+        if(orderAZ && orderby=="name"){
+            users.sort((a, b) => b.name.localeCompare(a.name));
+            orderAZ = false;
+        }else{
+            users.sort((a, b) => a.name.localeCompare(b.name));
+            orderby="name";
+            orderAZ = true;
+        }
+        listUsers(users);
+    }
+
+    //Order Users by usersname
+    function orderUsersByUsername(users){
+        if(orderAZ && orderby=="username"){
+            users.sort((a, b) => b.username.localeCompare(a.username));
+            orderAZ = false;
+        }else{
+            users.sort((a, b) => a.username.localeCompare(b.username));
+            orderby="username";
+            orderAZ = true;
+        }
+        listUsers(users);
+    }
+
+    //Order Users by email
+    function orderUsersByEmail(users){
+        if(orderAZ && orderby=="email"){
+            users.sort((a, b) => b.email.localeCompare(a.email));
+            orderAZ = false;
+        }else{
+            users.sort((a, b) => a.email.localeCompare(b.email));
+            orderby="email";
+            orderAZ = true;
+        }
+        listUsers(users);
+    }
+
+    $("#order-name").on('click', function(){
+        orderUsersByName(globalUsers);
+    });
+
+    $("#order-username").on('click', function(){
+        orderUsersByUsername(globalUsers);
+    });
+
+    $("#order-email").on('click', function(){
+        orderUsersByEmail(globalUsers);
+    });
 
 });
 
