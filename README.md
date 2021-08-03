@@ -59,4 +59,6 @@ Laravel
 * [ok] Migrations
 * [ok] Seeder
 * [ok] Factory
-
+* [ok] Alterar abas companies e addresses (blade)
+* [ok] Ordenar lista de usuários
+* [] Incluir paginação na Lista

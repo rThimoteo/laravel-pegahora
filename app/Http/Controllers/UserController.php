@@ -13,9 +13,12 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all()->toArray();
+        $orderby = $request->input('orderBy', 'name');
+        $direct = $request->input('direction', 'asc');
+
+        $users = User::orderBy($orderby, $direct)->get()->toArray();
 
         return response($users, 200);
     }

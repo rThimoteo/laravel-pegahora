@@ -42,10 +42,52 @@
             <table id="users-table" class="table table-striped table-sm">
                 <thead>
                     <tr>
-                        <th><button id="order-name" class="btn-order">Name<i class="fas ml-1 fa-sort"></i></button></th>
-                        <th><button id="order-username" class="btn-order">Username<i class="fas ml-1 fa-sort"></i></button></th>
-                        <th><button id="order-email" class="btn-order">E-mail<i class="fas ml-1 fa-sort"></i></button></th>
-                        <th>Actions</th>
+                        <th>
+                            <button id="order-name" class="btn-order py-2">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col align-self-center">
+                                            Name
+                                        </div>
+                                        <div class="col">
+                                            <div class="row order-up"><i id="btn-name-za" class="fas ml-1 fa-sort-up fa-lg"></i></div>
+                                            <div class="row order-down"><i id="btn-name-az" class="fas ml-1 fa-sort-down fa-lg icon-order-active"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        </th>
+                        <th>
+                            <button id="order-username" class="btn-order py-2">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col align-self-center">
+                                            Username
+                                        </div>
+                                        <div class="col">
+                                            <div class="row order-up"><i id="btn-username-za" class="fas ml-1 fa-sort-up fa-lg"></i></div>
+                                            <div class="row order-down"><i id="btn-username-az" class="fas ml-1 fa-sort-down fa-lg"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        </th>
+                        <th>
+                            <button id="order-email" class="btn-order py-2">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col align-self-center">
+                                            Email
+                                        </div>
+                                        <div class="col">
+                                            <div class="row order-up"><i id="btn-email-za" class="fas ml-1 fa-sort-up fa-lg"></i></div>
+                                            <div class="row order-down"><i id="btn-email-az" class="fas ml-1 fa-sort-down fa-lg"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        </th>
+                        <th class="align-middle"><div class="aling-center">Actions</div></th>
                     </tr>
                 </thead>
                 <tbody>

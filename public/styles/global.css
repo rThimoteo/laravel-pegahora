@@ -39,6 +39,26 @@
     background-color: rgb(255, 255, 255);
     border: none;
     color: rgb(0, 0, 0);
-    font-size: 16px;
     cursor: pointer;
-  }
+    vertical-align: middle;
+    text-align: center;
+    transition: 0.3s;
+    border-radius: 8px;
+
+}
+
+.btn-order:hover {
+    background-color: rgb(211, 211, 211);
+}
+
+.icon-order-active {
+    color: rgb(65, 139, 236);
+}
+
+.order-up{
+    margin-bottom: -10px;
+}
+
+.order-down{
+    margin-top: -10px;
+}

@@ -27,3 +27,9 @@
 
 @endsection
 
+
+@section ('js')
+
+<script src="/js/company.js"></script>
+
+@endsection
