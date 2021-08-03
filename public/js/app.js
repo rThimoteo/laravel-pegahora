@@ -57,11 +57,6 @@ $(function(){
     const companyApi = '/company/';
     const addressApi = '/address/';
     globalUserID = "";
-    const addressApiEndpoint = '/address';
-    const companyApiEndpoint = '/company';
-    orderAZ = false;
-    oderby = "";
-
     const loadingDataRow = [
         '<tr id="loading">',
             '<td colspan="6" class="text-center">Carregando...</td>',
@@ -69,10 +64,19 @@ $(function(){
     ];
 
     //Carregar usuários para tabela
-    function getUsersList() {
+    function getUsersList(filter) {
+
+        var data = {
+            orderBy : 'name',
+            direction : 'asc'
+        };
+
+        filter = filter || {};
+        data = Object.assign(data, filter);
 
         $.ajax({
             url: usersApiEndpoint,
+            data,
             beforeSend: function() {
                 $('#users-table').find('tbody').append(loadingDataRow.join(''));
             },
@@ -80,16 +84,12 @@ $(function(){
                 $('#loading').remove();
             },
             success: function(data) {
-                exportUsers(data);
                 listUsers(data);
             },
             error: function(error) {
+                console.error(error);
             }
         });
-    }
-
-    function exportUsers(data){
-        globalUsers = data;
     }
 
     function listUsers(users){
@@ -803,147 +803,52 @@ $(function(){
 
     });
 
-    //Carregar dados de addresses
-    function getAddressesList() {
-        $.ajax({
-            url: addressApiEndpoint,
-
-            beforeSend: function() {
-                $('#addresses-table').find('tbody').append(loadingDataRow.join(''));
-            },
-
-            complete: function() {
-                $('#loading').remove();
-            },
-            success: function(addressAPI) {
-
-                $('#addresses-table').find('tbody').html('');
-
-                $.each(addressAPI, function(index, address) {
-                    $.ajax({
-                        url: userApi+address.user_id,
-
-                        beforeSend: function() {
-                        },
-
-                        success: function(user) {
-                            $('#addresses-table').find('tbody').append([
-                                '<tr>',
-                                    '<td>',address.zipcode,'</td>',
-                                    '<td>',address.street,'</td>',
-                                    '<td>',address.suite,'</td>',
-                                    '<td>',user.name,'</td>',
-                                '</tr>'
-                            ].join(''));
-                        },
-                        error: function(error) {
-                        }
-                    });
-                });
-            },
-            error: function(error) {
-            }
-        });
-    }
-
-    //Carregar dados de companies
-    function getCompaniesList() {
-        $.ajax({
-            url: companyApiEndpoint,
-
-            beforeSend: function() {
-                $('#companies-table').find('tbody').append(loadingDataRow.join(''));
-            },
-
-            complete: function() {
-                $('#loading').remove();
-            },
-            success: function(companyAPI) {
-
-                $('#companies-table').find('tbody').html('');
-
-                $.each(companyAPI, function(index, company) {
-                    $.ajax({
-                        url: userApi+company.user_id,
-
-                        beforeSend: function() {
-                        },
-
-                        success: function(user) {
-                            $('#companies-table').find('tbody').append([
-                                '<tr>',
-                                    '<td>',company.name,'</td>',
-                                    '<td>',company.bs,'</td>',
-                                    '<td>',company.catch_phrase,'</td>',
-                                    '<td>',user.name,'</td>',
-                                '</tr>'
-                            ].join(''));
-                        },
-                        error: function(error) {
-                        }
-                    });
-                });
-            },
-            error: function(error) {
-            }
-        });
-    }
-
-    getAddressesList();
-    getCompaniesList();
-
-    //Functions Order by
-    //Order Users by name
-    function orderUsersByName(users){
-        if(orderAZ && orderby=="name"){
-            users.sort((a, b) => b.name.localeCompare(a.name));
-            orderAZ = false;
-        }else{
-            users.sort((a, b) => a.name.localeCompare(b.name));
-            orderby="name";
-            orderAZ = true;
-        }
-        listUsers(users);
-    }
-
-    //Order Users by usersname
-    function orderUsersByUsername(users){
-        if(orderAZ && orderby=="username"){
-            users.sort((a, b) => b.username.localeCompare(a.username));
-            orderAZ = false;
-        }else{
-            users.sort((a, b) => a.username.localeCompare(b.username));
-            orderby="username";
-            orderAZ = true;
-        }
-        listUsers(users);
-    }
-
-    //Order Users by email
-    function orderUsersByEmail(users){
-        if(orderAZ && orderby=="email"){
-            users.sort((a, b) => b.email.localeCompare(a.email));
-            orderAZ = false;
-        }else{
-            users.sort((a, b) => a.email.localeCompare(b.email));
-            orderby="email";
-            orderAZ = true;
-        }
-        listUsers(users);
-    }
+    orderAsc = true;
+    order = "name";
 
     $("#order-name").on('click', function(){
-        orderUsersByName(globalUsers);
+        if(orderAsc && order=="name"){
+            getUsersList({orderBy : 'name', direction : 'desc'});
+            orderAsc = false;
+            $('.icon-order-active').removeClass("icon-order-active");
+            $('#btn-name-za').addClass("icon-order-active");
+        }else{
+            getUsersList({orderBy : 'name', direction : 'asc'});
+            order="name";
+            orderAsc = true;
+            $('.icon-order-active').removeClass("icon-order-active");
+            $('#btn-name-az').addClass("icon-order-active");
+        }
     });
 
     $("#order-username").on('click', function(){
-        orderUsersByUsername(globalUsers);
+        if(orderAsc && order=="username"){
+            getUsersList({orderBy : 'username', direction : 'desc'});
+            orderAsc = false;
+            $('.icon-order-active').removeClass("icon-order-active");
+            $('#btn-username-za').addClass("icon-order-active");
+        }else{
+            getUsersList({orderBy : 'username', direction : 'asc'});
+            order="username";
+            orderAsc = true;
+            $('.icon-order-active').removeClass("icon-order-active");
+            $('#btn-username-az').addClass("icon-order-active");
+        }
     });
 
     $("#order-email").on('click', function(){
-        orderUsersByEmail(globalUsers);
+        if(orderAsc && order=="email"){
+            getUsersList({orderBy : 'email', direction : 'desc'});
+            orderAsc = false;
+            $('.icon-order-active').removeClass("icon-order-active");
+            $('#btn-email-za').addClass("icon-order-active");
+        }else{
+            getUsersList({orderBy : 'email', direction : 'asc'});
+            order="email";
+            orderAsc = true;
+            $('.icon-order-active').removeClass("icon-order-active");
+            $('#btn-email-az').addClass("icon-order-active");
+        }
     });
 
 });
-
-

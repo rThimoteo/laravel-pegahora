@@ -39,6 +39,22 @@ Route::group(['middleware' => 'auth'], function (){
         Route::put('/{user}', [UserController::class, 'update']);
 
         Route::delete('/{user}', [UserController::class, 'destroy']);
+
+        Route::group(['prefix' => '/orderby'], function (){
+
+            Route::get('/name', [UserController::class, 'orderByName']);
+
+            Route::get('/email', [UserController::class, 'orderByEmail']);
+
+            Route::get('/username', [UserController::class, 'orderByUsername']);
+
+            Route::get('/name/desc', [UserController::class, 'orderByNameDesc']);
+
+            Route::get('/email/desc', [UserController::class, 'orderByEmailDesc']);
+
+            Route::get('/username/desc', [UserController::class, 'orderByUsernameDesc']);
+
+        });
     });
 
     //Rotas para Address
