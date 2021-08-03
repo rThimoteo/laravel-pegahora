@@ -27,3 +27,8 @@
 
 @endsection
 
+@section ('js')
+
+<script src="/js/address.js"></script>
+
+@endsection
