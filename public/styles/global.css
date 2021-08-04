@@ -62,3 +62,33 @@
 .order-down{
     margin-top: -10px;
 }
+
+.pagination {
+    display: inline-block;
+}
+
+  .pagination button {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    border:none;
+    margin-left: 2px;
+    margin-right: 2px;
+    background-color: #FFFFFF;
+  }
+
+  .pagination button.active {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+  }
+
+  .pagination button:hover:not(.active) {
+    background-color: #ddd;
+    border-radius: 5px;
+  }
+
+.label-cep {
+    padding-right: 0px;
+}

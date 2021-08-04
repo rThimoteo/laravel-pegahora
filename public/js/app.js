@@ -23,20 +23,48 @@ $(function(){
                 $('#cep').val('');
                 $('#cep').blur();
                 $('#dados-cep').append([
-                        '<label id="lb-cep">CEP: </label>',
-                        '<span class="resp" id="cep-resp">',data.cep,'</span>',
-                        '<br>',
-                        '<label id="lb-estado">Estado: </label>',
-                        '<span class="resp" id="uf">',data.uf,'</span>',
-                        '<br>',
-                        '<label  id="lb-cidade">Cidade: </label>',
-                        '<span class="resp" id="cidade">',data.localidade,'</span>',
-                        '<br>',
-                        '<label id="lb-bairro">Bairro: </label>',
-                        '<span class="resp" id="bairro">',data.bairro,'</span>',
-                        '<br>',
-                        '<label id="lb-rua">Logradouro: </label>',
-                        '<span class="resp" id="rua">',data.logradouro,'</span>'
+                    '<div class="container text-left">',
+                        '<div class="row">',
+                            '<div class="col-2 label-cep text-right">',
+                                '<label id="lb-cep">CEP: </label>',
+                            '</div>',
+                            '<div class="col text-left">',
+                                '<span class="resp" id="cep-resp">',data.cep,'</span>',
+                            '</div>',
+                        '</div>',
+                        '<div class="row">',
+                            '<div class="col-2 label-cep text-right">',
+                                '<label id="lb-estado">Estado: </label>',
+                            '</div>',
+                            '<div class="col text-left">',
+                                '<span class="resp" id="uf">',data.uf,'</span>',
+                            '</div>',
+                        '</div>',
+                        '<div class="row">',
+                            '<div class="col-2 label-cep text-right">',
+                                '<label  id="lb-cidade">Cidade: </label>',
+                            '</div>',
+                            '<div class="col text-left">',
+                                '<span class="resp" id="cidade">',data.localidade,'</span>',
+                            '</div>',
+                        '</div>',
+                        '<div class="row">',
+                            '<div class="col-2 label-cep text-right">',
+                                '<label id="lb-bairro">Bairro: </label>',
+                            '</div>',
+                            '<div class="col text-left">',
+                                '<span class="resp" id="bairro">',data.bairro,'</span>',
+                            '</div>',
+                        '</div>',
+                        '<div class="row">',
+                            '<div class="col-2 label-cep text-right">',
+                                '<label id="lb-rua">Logradouro: </label>',
+                            '</div>',
+                            '<div class="col text-left">',
+                                '<span class="resp" id="rua">',data.logradouro,'</span>',
+                            '</div>',
+                        '</div>',
+                    '</div>'
                 ].join(''));
             },
             error: function(response, textStatus, errorThrown){
@@ -62,13 +90,16 @@ $(function(){
             '<td colspan="6" class="text-center">Carregando...</td>',
         '<tr>'
     ];
+    orderAsc = true;
+    order = 'name';
 
     //Carregar usuários para tabela
     function getUsersList(filter) {
 
         var data = {
             orderBy : 'name',
-            direction : 'asc'
+            direction : 'asc',
+            page : 1
         };
 
         filter = filter || {};
@@ -92,10 +123,12 @@ $(function(){
         });
     }
 
+
+    //Função para listar users
     function listUsers(users){
         $('#users-table').find('tbody').html('');
 
-        $.each(users, function(index, userApi) {
+        $.each(users.data, function(index, userApi) {
             var adminActions = [];
             if (window.user.is_admin){
                 adminActions.push([
@@ -121,8 +154,40 @@ $(function(){
                 '</tr>'
             ].join(''));
         });
+
+        //Paginação da lista
+        $('#pagination').html('');
+        $('.active').removeClass('active');
+        $.each(users.links, function(index, pageLink) {
+
+            namePage = pageLink.label;
+
+            if(pageLink.label.includes("Previous")){
+                let pagina = users.current_page - 1;
+                pageLink.label = pagina.toString();
+            }
+            if(pageLink.label.includes("Next")){
+                if(users.current_page == users.last_page){
+                    pageLink.label = users.last_page;
+                }else{
+                    let pagina = users.current_page + 1;
+                    pageLink.label = pagina.toString();
+                }
+            }
+
+            $('#pagination').append([
+                '<button type="button" class="btn-pages" id="',pageLink.label,'" data-id="',pageLink.label,'">',namePage,'</button>'
+            ].join(''));
+
+            if(pageLink.active && !namePage.includes("Previous") && !namePage.includes("Next")){
+                $('#'+pageLink.label).addClass('active');
+            }
+
+        });
+
         rebindButtons();
     }
+
 
     //Mudando ação do Delete
     function rebindButtons (){
@@ -146,6 +211,42 @@ $(function(){
                     }
                 });
             }
+        });
+
+        $('.btn-pages').off('click');
+
+        $('.btn-pages').on('click', function() {
+            var page = $(this).data('id');
+
+            var direct = 'asc';
+            if(!orderAsc){
+                direct = 'desc';
+            }
+
+            var data = {
+                orderBy : order,
+                direction : direct,
+                page : page
+            };
+
+            $.ajax({
+                url:usersApiEndpoint,
+
+                data,
+
+                beforeSend: function() {
+                    $('#users-table').find('tbody').append(loadingDataRow.join(''));
+                },
+                complete: function() {
+                    $('#loading').remove();
+                },
+                success: function(data) {
+                    listUsers(data);
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
         });
     }
 
@@ -574,6 +675,7 @@ $(function(){
         $('.form-control').val('');
     });
 
+    //Form de adicionar novo usuário
     $('#form-user').on('submit', (ev) => {
         ev.preventDefault();
         var url = $('#form-user').data('action');
@@ -616,6 +718,7 @@ $(function(){
 
     });
 
+    //Form para adicionar compania
     $('#form-company').on('submit', (ev) => {
         ev.preventDefault();
         var url = $('#form-company').data('action');
@@ -659,6 +762,7 @@ $(function(){
 
     });
 
+    //Form para adicionar endereço
     $('#form-address').on('submit', (ev) => {
         ev.preventDefault();
         var url = $('#form-address').data('action');
@@ -803,41 +907,41 @@ $(function(){
 
     });
 
-    orderAsc = true;
-    order = "name";
-
+    //Ordenar usuários por nome
     $("#order-name").on('click', function(){
-        if(orderAsc && order=="name"){
+        if(orderAsc && order=='name'){
             getUsersList({orderBy : 'name', direction : 'desc'});
             orderAsc = false;
             $('.icon-order-active').removeClass("icon-order-active");
             $('#btn-name-za').addClass("icon-order-active");
         }else{
             getUsersList({orderBy : 'name', direction : 'asc'});
-            order="name";
+            order='name';
             orderAsc = true;
             $('.icon-order-active').removeClass("icon-order-active");
             $('#btn-name-az').addClass("icon-order-active");
         }
     });
 
+    //Ordenar usuários por username
     $("#order-username").on('click', function(){
-        if(orderAsc && order=="username"){
+        if(orderAsc && order=='username'){
             getUsersList({orderBy : 'username', direction : 'desc'});
             orderAsc = false;
             $('.icon-order-active').removeClass("icon-order-active");
             $('#btn-username-za').addClass("icon-order-active");
         }else{
             getUsersList({orderBy : 'username', direction : 'asc'});
-            order="username";
+            order='username';
             orderAsc = true;
             $('.icon-order-active').removeClass("icon-order-active");
             $('#btn-username-az').addClass("icon-order-active");
         }
     });
 
+    //Ordenar usuários por e-mail
     $("#order-email").on('click', function(){
-        if(orderAsc && order=="email"){
+        if(orderAsc && order=='email'){
             getUsersList({orderBy : 'email', direction : 'desc'});
             orderAsc = false;
             $('.icon-order-active').removeClass("icon-order-active");

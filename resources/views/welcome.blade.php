@@ -94,6 +94,11 @@
 
                 </tbody>
             </table>
+            <div class="container text-center">
+                <div id="pagination" class="pagination">
+
+                </div>
+            </div>
         </div>
     </div>
 

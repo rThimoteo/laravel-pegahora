@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -18,7 +17,7 @@ class UserController extends Controller
         $orderby = $request->input('orderBy', 'name');
         $direct = $request->input('direction', 'asc');
 
-        $users = User::orderBy($orderby, $direct)->get()->toArray();
+        $users = User::orderBy($orderby, $direct)->paginate(5);
 
         return response($users, 200);
     }
