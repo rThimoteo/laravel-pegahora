@@ -160,27 +160,32 @@ $(function(){
         $('.active').removeClass('active');
         $.each(users.links, function(index, pageLink) {
 
-            namePage = pageLink.label;
+            var dataId = pageLink.label;
+            var pageId = pageLink.label;
 
             if(pageLink.label.includes("Previous")){
                 let pagina = users.current_page - 1;
-                pageLink.label = pagina.toString();
+                dataId = pagina.toString();
+                pageId = "prev";
             }
             if(pageLink.label.includes("Next")){
-                if(users.current_page == users.last_page){
-                    pageLink.label = users.last_page;
-                }else{
-                    let pagina = users.current_page + 1;
-                    pageLink.label = pagina.toString();
-                }
+                let pagina = users.current_page + 1;
+                dataId = pagina.toString();
+                pageId = "next";
             }
 
             $('#pagination').append([
-                '<button type="button" class="btn-pages" id="',pageLink.label,'" data-id="',pageLink.label,'">',namePage,'</button>'
+                '<button type="button" class="btn-pages" id="',pageId,'" data-id="',dataId,'">',pageLink.label,'</button>'
             ].join(''));
 
-            if(pageLink.active && !namePage.includes("Previous") && !namePage.includes("Next")){
+            if(pageLink.active && !pageLink.label.includes("Previous") && !pageLink.label.includes("Next")){
                 $('#'+pageLink.label).addClass('active');
+            }
+            if(users.current_page == 1 && pageLink.label.includes("Previous")){
+                $('#prev').hide();
+            }
+            if(users.current_page == users.last_page && pageLink.label.includes("Next")){
+                $('#next').hide();
             }
 
         });

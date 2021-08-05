@@ -17,10 +17,6 @@
             </div>
         </form>
         <div>
-            <!-- IMPRIMIR DATA E HORA QUE VEM DA LIB DateTime -->
-            {{-- <br>
-            <span class="hora">{{dia}}<br>{{hora}}</span>
-            <br> --}}
             <br>
             <p id="dados-cep"></p>
         </div>
