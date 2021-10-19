@@ -61,4 +61,4 @@ Laravel
 * [ok] Factory
 * [ok] Alterar abas companies e addresses (blade)
 * [ok] Ordenar lista de usuários
-* [] Incluir paginação na Lista
+* [ok] Incluir paginação na Lista
